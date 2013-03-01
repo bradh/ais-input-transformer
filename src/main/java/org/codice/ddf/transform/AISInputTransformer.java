@@ -10,7 +10,7 @@
  *
  **/
 
-package com.radiantblue.ais;
+package org.codice.ddf.transform;
 
 
 import ddf.catalog.data.Metacard;
