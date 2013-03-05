@@ -10,7 +10,7 @@
  *
  **/
 
-package org.codice.ddf.transform;
+package org.codice.ddf.transform.ais;
 
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -18,7 +18,6 @@ import com.vividsolutions.jts.io.WKTWriter;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
 import ddf.catalog.transform.CatalogTransformerException;
-import ddf.catalog.transform.InputTransformer;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
@@ -29,9 +28,9 @@ import java.util.Date;
 import java.util.TimeZone;
 
 
-public class AISInputTransformer implements InputTransformer  {
+public class InputTransformer implements ddf.catalog.transform.InputTransformer {
 
-  private static final Logger log = Logger.getLogger(AISInputTransformer.class);
+  private static final Logger log = Logger.getLogger(InputTransformer.class);
 
   public static final SimpleDateFormat ISO_8601_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
   static {

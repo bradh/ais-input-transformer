@@ -25,8 +25,17 @@
     <parent>
         <artifactId>catalog</artifactId>
         <groupId>ddf.catalog</groupId>
-        <version>2.2.0.ALPHA1</version>
+        <version>2.1.0.20130129-1341</version>
     </parent>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>codiceSnapshots</id>
+            <name>Codice Snapshot Repository</name>
+            <url>https://tools.codice.org/artifacts/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -68,8 +77,8 @@
             <version>1.12</version>
         </dependency>
     </dependencies>
-  
-  
+
+
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <sourceDirectory>src/main/java</sourceDirectory>
