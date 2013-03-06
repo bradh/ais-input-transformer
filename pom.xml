@@ -110,7 +110,13 @@
                         com.vividsolutions.jts.*,
                         org.apache.commons.io,
                         org.apache.log4j,
-                        org.codice.ddf.transform.ais.message
+                        org.codice.ddf.transform.ais.message,
+                        org.apache.commons.lang,
+                        org.apache.http,
+                        org.apache.http.client,
+                        org.apache.http.client.methods,
+                        org.apache.http.entity,
+                        org.apache.http.impl.client
 					</Import-Package>
 				</instructions>
 			</configuration>
