@@ -3,7 +3,6 @@ package org.codice.ddf.utility.ais;
 import junit.framework.TestCase;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.when;
  * Date: 3/6/13
  * Time: 10:43 AM
  */
-public class TestAISHttpOutputAdapter extends TestCase {
+public class TestAISInputStreamAdapter extends TestCase {
 
 
   @Test()
@@ -35,7 +34,7 @@ public class TestAISHttpOutputAdapter extends TestCase {
     when(
             client.execute((HttpHost)notNull(), (HttpRequest)any())
     ).thenReturn(null);
-    AISHttpOutputAdapter adapter = new AISHttpOutputAdapter(new ByteArrayInputStream(string.getBytes())){
+    AISStreamInputAdapter adapter = new AISStreamInputAdapter(new ByteArrayInputStream(string.getBytes())){
       @Override
       protected HttpClient getHttpClient() {
         return client;
@@ -61,7 +60,7 @@ public class TestAISHttpOutputAdapter extends TestCase {
     when(
             client.execute((HttpHost)notNull(), (HttpRequest)any())
     ).thenReturn(null);
-    AISHttpOutputAdapter adapter = new AISHttpOutputAdapter(new ByteArrayInputStream(string.getBytes())){
+    AISStreamInputAdapter adapter = new AISStreamInputAdapter(new ByteArrayInputStream(string.getBytes())){
       @Override
       protected HttpClient getHttpClient() {
         return client;

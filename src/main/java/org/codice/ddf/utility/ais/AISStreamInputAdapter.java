@@ -23,14 +23,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AISHttpOutputAdapter {
+public class AISStreamInputAdapter {
 
-  private static final Logger log = Logger.getLogger(AISHttpOutputAdapter.class);
+  private static final Logger log = Logger.getLogger(AISStreamInputAdapter.class);
 
   private static final String CONTENT_TYPE = "application/ais-nmea";
   private InputStream inputStream;
 
-  public AISHttpOutputAdapter(InputStream inputStream) {
+  public AISStreamInputAdapter(InputStream inputStream) {
+    log.debug("Creating AISStreamInputAdapter");
     this.inputStream = inputStream;
   }
 

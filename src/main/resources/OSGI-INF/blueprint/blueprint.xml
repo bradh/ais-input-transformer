@@ -19,7 +19,13 @@
 	<bean id="transformer"
 		class="org.codice.ddf.transform.ais.AISInputTransformer" />
 
-	<service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
+    <!--<bean id="fileInputStream" class="java.io.FileInputStream">-->
+        <!--<argument type="String" value="~/Downloads/20130226.log" />-->
+    <!--</bean>-->
+
+
+
+    <service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
 		<service-properties>
 			<entry key="id" value="ais" />
 			<!-- List of mime type this AISInputTransformer supports -->
