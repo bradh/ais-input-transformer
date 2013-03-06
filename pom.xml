@@ -72,9 +72,21 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
             <version>1.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codice.common</groupId>
+            <artifactId>ais-parser</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -97,7 +109,8 @@
               			org.osgi.service.blueprint,
                         com.vividsolutions.jts.*,
                         org.apache.commons.io,
-                        org.apache.log4j
+                        org.apache.log4j,
+                        org.codice.ddf.transform.ais.message
 					</Import-Package>
 				</instructions>
 			</configuration>

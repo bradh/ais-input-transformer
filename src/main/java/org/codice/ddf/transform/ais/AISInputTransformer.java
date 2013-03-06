@@ -28,9 +28,9 @@ import java.util.Date;
 import java.util.TimeZone;
 
 
-public class InputTransformer implements ddf.catalog.transform.InputTransformer {
+public class AISInputTransformer implements ddf.catalog.transform.InputTransformer {
 
-  private static final Logger log = Logger.getLogger(InputTransformer.class);
+  private static final Logger log = Logger.getLogger(AISInputTransformer.class);
 
   public static final SimpleDateFormat ISO_8601_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
   static {

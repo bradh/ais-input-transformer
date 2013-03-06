@@ -16,7 +16,7 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.transform.CatalogTransformerException;
-import org.codice.ddf.transform.ais.InputTransformer;
+import org.codice.ddf.transform.ais.AISInputTransformer;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -34,24 +34,24 @@ public class TestAISInputTransformer {
 
 	@Test(expected = CatalogTransformerException.class)
 	public void testNullInput() throws IOException, CatalogTransformerException {
-		new InputTransformer().transform(null);
+		new AISInputTransformer().transform(null);
 	}
 
 	@Test(expected = CatalogTransformerException.class)
 	public void testBadInput() throws IOException, CatalogTransformerException {
-		new InputTransformer().transform(new ByteArrayInputStream("donkey".getBytes()));
+		new AISInputTransformer().transform(new ByteArrayInputStream("donkey".getBytes()));
 	}
 
 	@Test(expected = CatalogTransformerException.class)
 	public void testNoProperties() throws IOException, CatalogTransformerException {
-		new InputTransformer().transform(new ByteArrayInputStream("{ \"type\": \"FeatureCollection\"}"
+		new AISInputTransformer().transform(new ByteArrayInputStream("{ \"type\": \"FeatureCollection\"}"
 				.getBytes()));
   }
 
 	@Test()
 	public void testPointGeo() throws IOException, CatalogTransformerException, ParseException {
 
-		Metacard metacard = new InputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
+		Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
 				.getBytes()));
 
 		verifyBasics(metacard);
@@ -69,7 +69,7 @@ public class TestAISInputTransformer {
   @Test
   public void testSetId() throws IOException, CatalogTransformerException {
 
-    Metacard metacard = new InputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
+    Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
             .getBytes()), SAMPLE_ID);
 
     verifyBasics(metacard);

@@ -17,12 +17,12 @@
 	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
 
 	<bean id="transformer"
-		class="org.codice.ddf.transform.ais.InputTransformer" />
+		class="org.codice.ddf.transform.ais.AISInputTransformer" />
 
 	<service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
 		<service-properties>
 			<entry key="id" value="ais" />
-			<!-- List of mime type this InputTransformer supports -->
+			<!-- List of mime type this AISInputTransformer supports -->
 			<entry key="mime-type">
 				<list>
 				    <value>application/ais-nmea</value>
