@@ -104,7 +104,15 @@
 				<instructions>
 					<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 					<Import-Package>
-                        org.codice.ddf.transform.ais
+					    ddf.catalog.*,
+						org.osgi.framework,
+              			org.osgi.service.blueprint,
+                        com.vividsolutions.jts.*,
+                        org.apache.commons.io,
+                        org.apache.log4j,
+                        org.apache.commons.lang,
+                        org.apache.commons.httpclient.*,
+                        org.codice.common.*
 					</Import-Package>
 				</instructions>
 			</configuration>
