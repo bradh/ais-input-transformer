@@ -6,33 +6,45 @@
 package org.codice.ddf.utility.ais;
 
 
-
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AISStreamInputAdapter {
+public class AISInputStreamAdapter {
 
-  private static final Logger log = Logger.getLogger(AISStreamInputAdapter.class);
+  private static final Logger log = Logger.getLogger(AISInputStreamAdapter.class);
 
   private static final String CONTENT_TYPE = "application/ais-nmea";
   private InputStream inputStream;
 
-  public AISStreamInputAdapter(InputStream inputStream) {
-    log.debug("Creating AISStreamInputAdapter");
+  public AISInputStreamAdapter(InputStream inputStream) {
+    log.info("Creating AISInputStreamAdapter");
     this.inputStream = inputStream;
+  }
+
+  public AISInputStreamAdapter(InputStream inputStream, String url, long delay, boolean autostart) throws UnhandledMessageException, IOException, URISyntaxException {
+    log.info("Creating AISInputStreamAdapter");
+
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {return;}
+
+    this.inputStream = inputStream;
+    if(autostart){
+      post(new URL(url), delay);
+    }
   }
 
   public void post(URL url) throws URISyntaxException, IOException, UnhandledMessageException {
@@ -41,26 +53,35 @@ public class AISStreamInputAdapter {
 
   public void post(URL url, long delay) throws URISyntaxException, IOException, UnhandledMessageException{
     HttpClient http = getHttpClient();
-    HttpPost post = new HttpPost(url.toURI());
+    PostMethod post = new PostMethod(url.toString());
 
     BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(this.inputStream));
     while(bufferedReader.ready()){
-      String message = this.getMessage(bufferedReader);
-      StringEntity entity = new StringEntity(message, HTTP.UTF_8);
+      String message = "";
+      try{
+        message = this.getMessage(bufferedReader);
+      }catch(UnhandledMessageException e){
+        log.error(e.getMessage());
+      }
 
-      post.setHeader("Content-Type", CONTENT_TYPE);
-      post.setEntity(entity);
+      if(!message.isEmpty()) {
+        RequestEntity entity = new StringRequestEntity(message, CONTENT_TYPE, "utf-8");
 
-      log.debug("Posting message " + message + " to " + url.toString());
-      http.execute(post);
+        post.setRequestHeader("Content-Type", CONTENT_TYPE);
+        post.setRequestEntity(entity);
+
+        log.info("Posting message " + message + " to " + url.toString());
+        http.executeMethod(post);
+      }
+
       try {
         Thread.sleep(delay);
-      } catch (InterruptedException e) {}
+      } catch (InterruptedException e) {return;}
     }
   }
 
   HttpClient getHttpClient(){
-    return new DefaultHttpClient();
+    return new HttpClient();
   }
 
   private String [] getTokens(BufferedReader reader) throws IOException {

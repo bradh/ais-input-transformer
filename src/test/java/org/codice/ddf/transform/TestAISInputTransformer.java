@@ -27,8 +27,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class TestAISInputTransformer {
-	private static final String SAMPLE_ID = "367085430";
-	public static final String DEFAULT_TITLE = "MELISSA B";
+	private static final String SAMPLE_ID = "701006240";
+	public static final String DEFAULT_TITLE = "LW 268";
 	public static final String DEFAULT_VERSION = null;
 	public static final String DEFAULT_TYPE = "application/ais-nmea";
 
@@ -60,9 +60,9 @@ public class TestAISInputTransformer {
 
 		Geometry geometry = reader.read(metacard.getLocation());
 
-		assertThat(geometry.getCoordinate().x, is(-117.3977567));
+		assertThat(geometry.getCoordinate().x, is(0.0));
 
-		assertThat(geometry.getCoordinate().y, is(32.80070167));
+		assertThat(geometry.getCoordinate().y, is(0.0));
 
 	}
 
@@ -82,11 +82,12 @@ public class TestAISInputTransformer {
 		assertEquals(DEFAULT_TITLE, metacard.getTitle());
 		assertEquals(DEFAULT_TYPE, metacard.getContentTypeName());
 		assertEquals(DEFAULT_VERSION, metacard.getContentTypeVersion());
-		assertEquals("<xml>MELISSA B</xml>", metacard.getMetadata());
+		assertEquals("<xml>701006240 LW 268 </xml>", metacard.getMetadata());
 	}
 
   private static final String sampleNMEAString(){
-    return "367085430,0,731.3864841,4.6,32.80070167,-117.3977567,150.3,511,1330605281,0,MELISSA B,31,14,4,0,14,0,4,20,SAN DIEGO,WDC8339,0,-1,-1";
+    return "!AIVDM,2,1,2,A,5:LR1`000000iN3;KS58Tv0MD5aF22222222221?6p:5562:06T53p0T,0*68,rEXACTEARTH_ALL,1361887931\n" +
+            "!AIVDM,2,2,2,A,p0Dp13PH1`88880,2*19,rEXACTEARTH_ALL,1361887931,1361898118";
   }
 
 }

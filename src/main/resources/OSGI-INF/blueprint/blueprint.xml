@@ -16,25 +16,32 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
 	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
 
-	<bean id="transformer"
-		class="org.codice.ddf.transform.ais.AISInputTransformer" />
+    <bean id="transformer"
+          class="org.codice.ddf.transform.ais.AISInputTransformer" />
+
+    <service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
+        <service-properties>
+            <entry key="id" value="ais" />
+            <!-- List of mime type this AISInputTransformer supports -->
+            <entry key="mime-type">
+                <list>
+                    <value>application/ais-nmea</value>
+                </list>
+            </entry>
+        </service-properties>
+    </service>
 
     <!--<bean id="fileInputStream" class="java.io.FileInputStream">-->
-        <!--<argument type="String" value="~/Downloads/20130226.log" />-->
+        <!--<argument type="java.lang.String" value="/Users/kwplummer/Downloads/20130226.log" />-->
+    <!--</bean>-->
+
+    <!--<bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter">-->
+        <!--<argument ref="fileInputStream" />-->
+        <!--<argument value="http://localhost:8181/services/catalog" />-->
+        <!--<argument value="1000" />-->
+        <!--<argument value="true" />-->
     <!--</bean>-->
 
 
-
-    <service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
-		<service-properties>
-			<entry key="id" value="ais" />
-			<!-- List of mime type this AISInputTransformer supports -->
-			<entry key="mime-type">
-				<list>
-				    <value>application/ais-nmea</value>
-				</list>
-			</entry>
-		</service-properties>
-	</service>
 
 </blueprint>

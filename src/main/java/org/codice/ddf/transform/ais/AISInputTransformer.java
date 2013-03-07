@@ -18,13 +18,19 @@ import com.vividsolutions.jts.io.WKTWriter;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
 import ddf.catalog.transform.CatalogTransformerException;
-import org.apache.commons.io.IOUtils;
+
 import org.apache.log4j.Logger;
+import org.codice.common.ais.Decoder;
+import org.codice.common.ais.message.Message;
+import org.codice.common.ais.message.Message5;
+import org.codice.common.ais.message.UnknownMessageException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 
@@ -56,22 +62,36 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
       throw new CatalogTransformerException("Cannot transform null input.");
     }
 
-    String nmea = IOUtils.toString(inputStream);
-    log.info("Parsing NMEA string \"" + nmea + "\"");
+    Decoder decoder = new Decoder();
+
+    List<Message> messages;
+    try {
+      messages = decoder.parseInputStream(inputStream);
+    } catch (UnknownMessageException e) {
+      log.error(e.getMessage());
+      throw new CatalogTransformerException(e);
+    }
+    if(messages.isEmpty())
+      throw new CatalogTransformerException("No Messages found in stream.");
 
     MetacardImpl metacard = new MetacardImpl();
-    String [] tokens = nmea.split(",");
-    if(tokens.length != 24){
-      throw new CatalogTransformerException("Missing Tokens in NMEA String " + nmea);
+
+    for(Message message : messages){
+      String metadata = "<xml>";
+      metacard.setId(String.valueOf(message.getMmsi()));
+      metadata += String.valueOf(message.getMmsi()) + " ";
+      if(message instanceof Message5){
+        metacard.setTitle(((Message5) message).getCallSign());
+        metadata += ((Message5) message).getCallSign() + " ";
+      }else{
+        metacard.setTitle(String.valueOf(message.getMmsi()));
+      }
+      metacard.setContentTypeName("application/ais-nmea");
+      metacard.setModifiedDate(new Date());
+      metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLon(), message.getLat())));
+      metadata += "</xml>";
+      metacard.setMetadata(metadata);
     }
-
-    metacard.setId(tokens[0]);
-    metacard.setTitle(tokens[10]);
-    metacard.setContentTypeName("application/ais-nmea");
-    metacard.setModifiedDate(new Date());
-    metacard.setMetadata("<xml>"+tokens[10]+"</xml>");
-    metacard.setLocation(WKTWriter.toPoint(new Coordinate(Double.parseDouble(tokens[5]), Double.parseDouble(tokens[4]))));
-
     return metacard;
   }
 }

@@ -1,11 +1,8 @@
 package org.codice.ddf.utility.ais;
 
 import junit.framework.TestCase;
-
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.client.HttpClient;
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -13,7 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,9 +28,9 @@ public class TestAISInputStreamAdapter extends TestCase {
 
     final HttpClient client = mock(HttpClient.class);
     when(
-            client.execute((HttpHost)notNull(), (HttpRequest)any())
-    ).thenReturn(null);
-    AISStreamInputAdapter adapter = new AISStreamInputAdapter(new ByteArrayInputStream(string.getBytes())){
+            client.executeMethod((HttpMethod)notNull())
+    ).thenReturn(0);
+    AISInputStreamAdapter adapter = new AISInputStreamAdapter(new ByteArrayInputStream(string.getBytes())){
       @Override
       protected HttpClient getHttpClient() {
         return client;
@@ -58,9 +54,9 @@ public class TestAISInputStreamAdapter extends TestCase {
 
     final HttpClient client = mock(HttpClient.class);
     when(
-            client.execute((HttpHost)notNull(), (HttpRequest)any())
-    ).thenReturn(null);
-    AISStreamInputAdapter adapter = new AISStreamInputAdapter(new ByteArrayInputStream(string.getBytes())){
+            client.executeMethod((HttpMethod) notNull())
+    ).thenReturn(0);
+    AISInputStreamAdapter adapter = new AISInputStreamAdapter(new ByteArrayInputStream(string.getBytes())){
       @Override
       protected HttpClient getHttpClient() {
         return client;
