@@ -19,14 +19,18 @@ import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
 import ddf.catalog.transform.CatalogTransformerException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codice.common.ais.Decoder;
 import org.codice.common.ais.message.Message;
 import org.codice.common.ais.message.Message5;
 import org.codice.common.ais.message.UnknownMessageException;
+import org.codice.ddf.utility.ais.AISInputStreamAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,6 +62,8 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
    */
   @Override
   public Metacard transform(InputStream inputStream, String id) throws IOException, CatalogTransformerException {
+    log.info("Received AIS message beginning transformation");
+
     if (inputStream == null) {
       throw new CatalogTransformerException("Cannot transform null input.");
     }
@@ -73,7 +79,7 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     }
     if(messages.isEmpty())
       throw new CatalogTransformerException("No Messages found in stream.");
-
+    log.info("Decoded " + messages.size() + " message(s)");
     MetacardImpl metacard = new MetacardImpl();
 
     for(Message message : messages){
@@ -92,7 +98,13 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
       metadata += "</xml>";
       metacard.setMetadata(metadata);
     }
+    log.info("Metacard " + metacard.getTitle() + " created");
     return metacard;
+  }
+
+  public static String convertStreamToString(java.io.InputStream is) {
+    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+    return s.hasNext() ? s.next() : "";
   }
 }
 

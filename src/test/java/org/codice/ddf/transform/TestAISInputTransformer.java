@@ -78,6 +78,25 @@ public class TestAISInputTransformer {
 
   }
 
+  @Test
+  public void testFailingInput() throws IOException, CatalogTransformerException, ParseException {
+
+    Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString2()
+            .getBytes()));
+
+    assertEquals("8PNN", metacard.getTitle());
+
+    WKTReader reader = new WKTReader();
+
+    Geometry geometry = reader.read(metacard.getLocation());
+
+    assertThat(geometry.getCoordinate().x, is(0.0));
+
+    assertThat(geometry.getCoordinate().y, is(0.0));
+
+  }
+
+
 	protected void verifyBasics(Metacard metacard) {
 		assertEquals(DEFAULT_TITLE, metacard.getTitle());
 		assertEquals(DEFAULT_TYPE, metacard.getContentTypeName());
@@ -85,9 +104,14 @@ public class TestAISInputTransformer {
 		assertEquals("<xml>701006240 LW 268 </xml>", metacard.getMetadata());
 	}
 
-  private static final String sampleNMEAString(){
+  public static final String sampleNMEAString(){
     return "!AIVDM,2,1,2,A,5:LR1`000000iN3;KS58Tv0MD5aF22222222221?6p:5562:06T53p0T,0*68,rEXACTEARTH_ALL,1361887931\n" +
             "!AIVDM,2,2,2,A,p0Dp13PH1`88880,2*19,rEXACTEARTH_ALL,1361887931,1361898118";
+  }
+
+  public static final String sampleNMEAString2(){
+    return "!AIVDM,2,1,9,A,54cPpV02;1G3Q0pr220HD@E84j1=B0h5E8DqB21?DpP;<4nB0K3CkU4Q@C8,0*4D,rEXACTEARTH_ALL,1361835781\n" +
+            "!AIVDM,2,2,9,A,888888888880,2*15,rEXACTEARTH_ALL,1361835781,1361836800";
   }
 
 }

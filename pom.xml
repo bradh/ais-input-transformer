@@ -88,7 +88,15 @@
             <artifactId>ais-parser</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.ipojo.annotations</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
     </dependencies>
+
 
 
   <build>
@@ -112,7 +120,8 @@
                         org.apache.log4j,
                         org.apache.commons.lang,
                         org.apache.commons.httpclient.*,
-                        org.codice.common.*
+                        org.codice.common.*,
+                        org.apache.commons.codec.binary
 					</Import-Package>
 				</instructions>
 			</configuration>

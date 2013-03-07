@@ -35,11 +35,10 @@
         <!--<argument type="java.lang.String" value="/Users/kwplummer/Downloads/20130226.log" />-->
     <!--</bean>-->
 
-    <!--<bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter">-->
+    <!--<bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter" init-method="init">-->
         <!--<argument ref="fileInputStream" />-->
         <!--<argument value="http://localhost:8181/services/catalog" />-->
         <!--<argument value="1000" />-->
-        <!--<argument value="true" />-->
     <!--</bean>-->
 
 

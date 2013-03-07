@@ -6,11 +6,13 @@
 package org.codice.ddf.utility.ais;
 
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang.StringUtils;
+import org.apache.felix.ipojo.annotations.Component;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -22,29 +24,33 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class AISInputStreamAdapter {
 
   private static final Logger log = Logger.getLogger(AISInputStreamAdapter.class);
 
   private static final String CONTENT_TYPE = "application/ais-nmea";
   private InputStream inputStream;
+  private String url;
+  private long delay;
+  private HttpClient httpClient;
 
   public AISInputStreamAdapter(InputStream inputStream) {
     log.info("Creating AISInputStreamAdapter");
     this.inputStream = inputStream;
   }
 
-  public AISInputStreamAdapter(InputStream inputStream, String url, long delay, boolean autostart) throws UnhandledMessageException, IOException, URISyntaxException {
+  public AISInputStreamAdapter(InputStream inputStream, String url, long delay) throws UnhandledMessageException, IOException, URISyntaxException {
     log.info("Creating AISInputStreamAdapter");
 
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {return;}
-
     this.inputStream = inputStream;
-    if(autostart){
-      post(new URL(url), delay);
-    }
+    this.url = url;
+    this.delay = delay;
+  }
+
+  public void init() throws IOException, UnhandledMessageException, URISyntaxException {
+    log.info("Starting AISInputStreamAdapter");
+    post(new URL(url), delay);
   }
 
   public void post(URL url) throws URISyntaxException, IOException, UnhandledMessageException {
@@ -65,13 +71,15 @@ public class AISInputStreamAdapter {
       }
 
       if(!message.isEmpty()) {
-        RequestEntity entity = new StringRequestEntity(message, CONTENT_TYPE, "utf-8");
+        RequestEntity entity = new StringRequestEntity(message, CONTENT_TYPE, null);
 
         post.setRequestHeader("Content-Type", CONTENT_TYPE);
         post.setRequestEntity(entity);
-
+        post.setRequestHeader("Content-Length", String.valueOf(message.length()));
         log.info("Posting message " + message + " to " + url.toString());
-        http.executeMethod(post);
+
+        int response = http.executeMethod(post);
+        log.info("Received response " + response + " from POST");
       }
 
       try {
@@ -81,7 +89,9 @@ public class AISInputStreamAdapter {
   }
 
   HttpClient getHttpClient(){
-    return new HttpClient();
+    if(this.httpClient == null)
+      this.httpClient = new HttpClient();
+    return this.httpClient;
   }
 
   private String [] getTokens(BufferedReader reader) throws IOException {
