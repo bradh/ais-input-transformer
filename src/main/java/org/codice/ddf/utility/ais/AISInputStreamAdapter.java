@@ -34,6 +34,8 @@ public class AISInputStreamAdapter {
   private String url;
   private long delay;
   private HttpClient httpClient;
+  private boolean open = false;
+  private boolean async = false;
 
   public AISInputStreamAdapter(InputStream inputStream) {
     log.info("Creating AISInputStreamAdapter");
@@ -50,41 +52,66 @@ public class AISInputStreamAdapter {
 
   public void init() throws IOException, UnhandledMessageException, URISyntaxException {
     log.info("Starting AISInputStreamAdapter");
+    this.open = true;
+    this.async = true;
     post(new URL(url), delay);
+  }
+
+  public void destroy() throws IOException {
+    log.info("Stopping AISInputStreamAdapter");
+    this.open = false;
+    if(this.inputStream != null)
+      this.inputStream.close();
+
   }
 
   public void post(URL url) throws URISyntaxException, IOException, UnhandledMessageException {
     post(url, 0);
   }
 
-  public void post(URL url, long delay) throws URISyntaxException, IOException, UnhandledMessageException{
-    HttpClient http = getHttpClient();
-    PostMethod post = new PostMethod(url.toString());
+  public void post(final URL url, final long delay) throws URISyntaxException, IOException, UnhandledMessageException {
+    Thread thread = new Thread(){
+      @Override
+      public void run(){
+        HttpClient http = getHttpClient();
+        PostMethod post = new PostMethod(url.toString());
 
-    BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(this.inputStream));
-    while(bufferedReader.ready()){
-      String message = "";
-      try{
-        message = this.getMessage(bufferedReader);
-      }catch(UnhandledMessageException e){
-        log.error(e.getMessage());
+        while(open){
+          try{
+            String message = "";
+            try{
+              message = getMessage(inputStream);
+            }catch(UnhandledMessageException e){
+              log.error(e.getMessage());
+            }
+
+            if(!message.isEmpty()) {
+              RequestEntity entity = new StringRequestEntity(message, CONTENT_TYPE, null);
+
+              post.setRequestHeader("Content-Type", CONTENT_TYPE);
+              post.setRequestEntity(entity);
+              post.setRequestHeader("Content-Length", String.valueOf(message.length()));
+              log.info("Posting message " + message + " to " + url.toString());
+
+              int response = http.executeMethod(post);
+              log.info("Received response " + response + " from POST");
+            }
+
+            try {
+              Thread.sleep(delay);
+            } catch (InterruptedException e) {return;}
+          }catch (Exception e){
+            if(open)
+              log.error(e);
+          }
+        }
       }
-
-      if(!message.isEmpty()) {
-        RequestEntity entity = new StringRequestEntity(message, CONTENT_TYPE, null);
-
-        post.setRequestHeader("Content-Type", CONTENT_TYPE);
-        post.setRequestEntity(entity);
-        post.setRequestHeader("Content-Length", String.valueOf(message.length()));
-        log.info("Posting message " + message + " to " + url.toString());
-
-        int response = http.executeMethod(post);
-        log.info("Received response " + response + " from POST");
-      }
-
+    };
+    thread.start();
+    if(!async){
       try {
-        Thread.sleep(delay);
-      } catch (InterruptedException e) {return;}
+        thread.join();
+      } catch (InterruptedException e) {}
     }
   }
 
@@ -94,15 +121,27 @@ public class AISInputStreamAdapter {
     return this.httpClient;
   }
 
-  private String [] getTokens(BufferedReader reader) throws IOException {
-    String line = reader.readLine();
-    if(line == null)
-      return null;
-    String [] tokens = line.split(",");
-    return tokens;
+  private String [] getTokens(InputStream reader) throws IOException {
+    try{
+      String line = "";//reader.readLine();
+      int integer = reader.read();
+      while(integer != -1 && (char)integer != '\n'){
+        line += (char)integer;
+        integer = reader.read();
+      }
+      log.info("Read Line: " + line);
+      if(line == null)
+        return null;
+      String [] tokens = line.split(",");
+      return tokens;
+    }catch (IOException e) {
+      if(this.open)
+        throw e;
+    }
+    return null;
   }
 
-  private String getMessage(BufferedReader reader) throws IOException, UnhandledMessageException {
+  private String getMessage(InputStream reader) throws IOException, UnhandledMessageException {
     List<String> message = new ArrayList<String>();
 
     String [] tokens = getTokens(reader);

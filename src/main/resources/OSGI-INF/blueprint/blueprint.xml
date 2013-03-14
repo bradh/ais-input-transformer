@@ -35,11 +35,16 @@
         <!--<argument type="java.lang.String" value="/Users/kwplummer/Downloads/20130226.log" />-->
     <!--</bean>-->
 
-    <!--<bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter" init-method="init">-->
-        <!--<argument ref="fileInputStream" />-->
-        <!--<argument value="http://localhost:8181/services/catalog" />-->
-        <!--<argument value="1000" />-->
-    <!--</bean>-->
+    <bean id="datagramInputStream" class="org.codice.ddf.utility.ais.DatagramInputStream" >
+        <argument value="62626" type="int"/>
+    </bean>
+
+    <bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter" init-method="init"
+            destroy-method="destroy">
+        <argument ref="datagramInputStream" />
+        <argument value="http://localhost:8181/services/catalog" />
+        <argument value="1000" />
+    </bean>
 
 
 
