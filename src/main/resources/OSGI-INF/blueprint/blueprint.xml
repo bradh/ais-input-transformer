@@ -42,7 +42,7 @@
     <bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter" init-method="init"
             destroy-method="destroy">
         <argument ref="datagramInputStream" />
-        <argument value="http://localhost:8181/services/catalog" />
+        <argument value="http://localhost:8080/services/catalog" />
         <argument value="1000" />
     </bean>
 
