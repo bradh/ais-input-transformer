@@ -95,6 +95,7 @@
             <version>1.8.0</version>
         </dependency>
 
+
     </dependencies>
 
 
@@ -121,7 +122,7 @@
                         org.apache.commons.lang,
                         org.apache.commons.httpclient.*,
                         org.codice.common.*,
-                        org.apache.commons.codec.binary
+                        org.osgi.service.cm
 					</Import-Package>
 				</instructions>
 			</configuration>
