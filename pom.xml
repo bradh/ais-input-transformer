@@ -112,18 +112,22 @@
 			<configuration>
 				<instructions>
 					<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+          <Embed-Dependency>ais-parser;inline=true</Embed-Dependency>
 					<Import-Package>
 					    ddf.catalog.*,
-						org.osgi.framework,
-              			org.osgi.service.blueprint,
-                        com.vividsolutions.jts.*,
-                        org.apache.commons.io,
-                        org.apache.log4j,
-                        org.apache.commons.lang,
-                        org.apache.commons.httpclient.*,
-                        org.codice.common.*,
-                        org.osgi.service.cm
+						  org.osgi.framework,
+              org.osgi.service.blueprint,
+              com.vividsolutions.jts.*,
+              org.apache.commons.io,
+              org.apache.log4j,
+              org.apache.commons.lang,
+              org.apache.commons.httpclient.*,
+              org.codice.common.*,
+              org.osgi.service.cm
 					</Import-Package>
+          <Export-Package>
+            org.codice.common.*
+          </Export-Package>
 				</instructions>
 			</configuration>
 		</plugin>
