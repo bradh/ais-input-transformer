@@ -13,24 +13,22 @@
 package org.codice.ddf.transform.ais;
 
 
+import buri.ddmsence.ddms.Resource;
+import buri.ddmsence.ddms.summary.gml.SRSAttributes;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTWriter;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
 import ddf.catalog.transform.CatalogTransformerException;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codice.common.ais.Decoder;
 import org.codice.common.ais.message.Message;
 import org.codice.common.ais.message.Message5;
 import org.codice.common.ais.message.UnknownMessageException;
-import org.codice.ddf.utility.ais.AISInputStreamAdapter;
+import buri.ddmsence.ddms.summary.gml.Position;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,23 +81,28 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     MetacardImpl metacard = new MetacardImpl();
 
     for(Message message : messages){
-      String metadata = "<xml>";
       metacard.setId(String.valueOf(message.getMmsi()));
-      metadata += String.valueOf(message.getMmsi()) + " ";
       if(message instanceof Message5){
         metacard.setTitle(((Message5) message).getCallSign());
-        metadata += ((Message5) message).getCallSign() + " ";
       }else{
         metacard.setTitle(String.valueOf(message.getMmsi()));
       }
       metacard.setContentTypeName("application/ais-nmea");
       metacard.setModifiedDate(new Date());
       metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLon(), message.getLat())));
-      metadata += "</xml>";
-      metacard.setMetadata(metadata);
+
+      List<Double> coordinates = new ArrayList<Double>();
+      coordinates.add(message.getLat());
+      coordinates.add(message.getLon());
+
+      metacard.setMetadata(getResourceForMessage(message));
     }
     log.info("Metacard " + metacard.getTitle() + " created");
     return metacard;
+  }
+
+  private String getResourceForMessage(Message message){
+    return null;
   }
 
   public static String convertStreamToString(java.io.InputStream is) {

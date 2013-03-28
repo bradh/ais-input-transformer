@@ -101,7 +101,7 @@ public class TestAISInputTransformer {
 		assertEquals(DEFAULT_TITLE, metacard.getTitle());
 		assertEquals(DEFAULT_TYPE, metacard.getContentTypeName());
 		assertEquals(DEFAULT_VERSION, metacard.getContentTypeVersion());
-		assertEquals("<xml>701006240 LW 268 </xml>", metacard.getMetadata());
+		assertEquals(null, metacard.getMetadata());
 	}
 
   public static final String sampleNMEAString(){
