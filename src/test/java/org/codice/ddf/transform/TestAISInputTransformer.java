@@ -101,7 +101,7 @@ public class TestAISInputTransformer {
 		assertEquals(DEFAULT_TITLE, metacard.getTitle());
 		assertEquals(DEFAULT_TYPE, metacard.getContentTypeName());
 		assertEquals(DEFAULT_VERSION, metacard.getContentTypeVersion());
-		assertEquals(null, metacard.getMetadata());
+		assertEquals(sampleMetadata().replaceAll("\\s", ""), metacard.getMetadata().replaceAll("\\s", ""));
 	}
 
   public static final String sampleNMEAString(){
@@ -114,4 +114,33 @@ public class TestAISInputTransformer {
             "!AIVDM,2,2,9,A,888888888880,2*15,rEXACTEARTH_ALL,1361835781,1361836800";
   }
 
+
+  public static final String sampleMetadata(){
+    return "<ddms:Resource xmlns:ddms=\"http://metadata.dod.mil/mdr/ns/DDMS/2.0/\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ICISM=\"urn:us:gov:ic:ism:v2\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://metadata.dod.mil/mdr/ns/DDMS/2.0/ DDMS-v2_0.xsd\" xmlns:gml=\"http://www.opengis.net/gml\">\n" +
+            "  <ddms:identifier ddms:qualifier=\"http://www.nmea.org/\" ddms:value=\"AISVDO\"/>\n" +
+            "  <ddms:title  ICISM:ownerProducer=\"USA\" ICISM:classification=\"U\" > 701006240 </ddms:title>\n" +
+            "  <ddms:publisher ICISM:ownerProducer=\"USA\" ICISM:classification=\"U\">\n" +
+            "   <ddms:Organization>\n" +
+            "    <ddms:name>RadiantBlue</ddms:name>\n" +
+            "   </ddms:Organization>\n" +
+            "  </ddms:publisher>\n" +
+            "  <ddms:subjectCoverage>\n" +
+            "   <ddms:Subject>\n" +
+            "    <ddms:category ddms:code=\"null\" ddms:qualifier=\"http://www.nmea.org/\" ddms:label=\"SpeedOverGround\"/>\n" +
+            "    <ddms:category ddms:code=\"null\" ddms:qualifier=\"http://www.nmea.org/\" ddms:label=\"TrueHeading\"/>\n" +
+            "   </ddms:Subject>\n" +
+            "  </ddms:subjectCoverage>\n" +
+            "  <ddms:geospatialCoverage>\n" +
+            "\t\t<ddms:GeospatialExtent>\n" +
+            "\t\t\t<ddms:boundingGeometry>\n" +
+            "\t\t\t\t<!-- Multiple points in here if needed -->\n" +
+            "\t\t\t\t<gml:Point srsName=\"EPSG:4326\" gml:id=\"ID_1\">\n" +
+            "\t\t\t\t\t<gml:pos>0.0 0.0</gml:pos>\n" +
+            "\t\t\t\t</gml:Point>\n" +
+            "\t\t\t</ddms:boundingGeometry>\n" +
+            "\t\t</ddms:GeospatialExtent>\n" +
+            "\t</ddms:geospatialCoverage>\n" +
+            "  <ddms:security ICISM:ownerProducer=\"USA\" ICISM:classification=\"U\" />\n" +
+            " </ddms:Resource>";
+  }
 }

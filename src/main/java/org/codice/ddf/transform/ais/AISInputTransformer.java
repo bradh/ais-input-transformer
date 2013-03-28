@@ -13,19 +13,19 @@
 package org.codice.ddf.transform.ais;
 
 
-import buri.ddmsence.ddms.Resource;
-import buri.ddmsence.ddms.summary.gml.SRSAttributes;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTWriter;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
 import ddf.catalog.transform.CatalogTransformerException;
+
 import org.apache.log4j.Logger;
 import org.codice.common.ais.Decoder;
 import org.codice.common.ais.message.Message;
 import org.codice.common.ais.message.Message5;
 import org.codice.common.ais.message.UnknownMessageException;
-import buri.ddmsence.ddms.summary.gml.Position;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,8 +101,10 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     return metacard;
   }
 
-  private String getResourceForMessage(Message message){
-    return null;
+  private String getResourceForMessage(Message message) {
+    AISDDMSMetadata metadata = new AISDDMSMetadata(String.valueOf(message.getMmsi()), null, null);
+    metadata.addPoint(message.getLat(), message.getLon());
+    return metadata.toString();
   }
 
   public static String convertStreamToString(java.io.InputStream is) {
@@ -110,6 +112,7 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     return s.hasNext() ? s.next() : "";
   }
 }
+
 
 
 /**
