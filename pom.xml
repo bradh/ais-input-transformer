@@ -39,6 +39,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>8.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>ddf.catalog.core</groupId>
             <artifactId>ddf-catalog-api</artifactId>
             <version>2.0.10</version>
@@ -97,8 +103,6 @@
 
     </dependencies>
 
-
-
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -122,7 +126,10 @@
               org.apache.commons.lang,
               org.apache.commons.httpclient.*,
               org.codice.common.*,
-              org.osgi.service.cm
+              org.osgi.service.cm,
+              org.geotools.filter,
+              org.opengis.filter,
+              org.opengis.filter.expression
 					</Import-Package>
           <Export-Package>
             org.codice.common.*

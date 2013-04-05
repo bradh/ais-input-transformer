@@ -16,8 +16,13 @@ package org.codice.ddf.transform.ais;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTWriter;
+import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
+import ddf.catalog.federation.FederationException;
+import ddf.catalog.operation.*;
+import ddf.catalog.source.SourceUnavailableException;
+import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.transform.CatalogTransformerException;
 
 import org.apache.log4j.Logger;
@@ -25,15 +30,15 @@ import org.codice.common.ais.Decoder;
 import org.codice.common.ais.message.Message;
 import org.codice.common.ais.message.Message5;
 import org.codice.common.ais.message.UnknownMessageException;
+import org.geotools.filter.FilterFactoryImpl;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 
 public class AISInputTransformer implements ddf.catalog.transform.InputTransformer {
@@ -44,6 +49,8 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
   static {
     ISO_8601_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
+
+  private CatalogFramework catalog;
 
   @Override
   public Metacard transform(InputStream inputStream) throws IOException, CatalogTransformerException {
@@ -78,38 +85,70 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     if(messages.isEmpty())
       throw new CatalogTransformerException("No Messages found in stream.");
     log.info("Decoded " + messages.size() + " message(s)");
-    MetacardImpl metacard = new MetacardImpl();
+    MetacardImpl metacard = null;
 
     for(Message message : messages){
-      metacard.setId(String.valueOf(message.getMmsi()));
-      if(message instanceof Message5){
-        metacard.setTitle(((Message5) message).getCallSign());
-      }else{
-        metacard.setTitle(String.valueOf(message.getMmsi()));
+      metacard = getMetacard(message);
+      if(metacard == null){
+        metacard = new MetacardImpl();
+        metacard.setId(String.valueOf(message.getMmsi()));
+        if(message instanceof Message5){
+          metacard.setTitle(((Message5) message).getCallSign());
+        }else{
+          metacard.setTitle(String.valueOf(message.getMmsi()));
+        }
+        metacard.setContentTypeName("application/ais-nmea");
+        metacard.setModifiedDate(new Date());
+        if(message.hasLocationData())
+          metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLon(), message.getLat())));
+
+        metacard.setMetadata(getResourceForMessage(message));
       }
-      metacard.setContentTypeName("application/ais-nmea");
-      metacard.setModifiedDate(new Date());
-      metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLon(), message.getLat())));
-
-      List<Double> coordinates = new ArrayList<Double>();
-      coordinates.add(message.getLat());
-      coordinates.add(message.getLon());
-
-      metacard.setMetadata(getResourceForMessage(message));
     }
     log.info("Metacard " + metacard.getTitle() + " created");
     return metacard;
   }
 
+  private MetacardImpl getMetacard(Message message){
+
+    FilterFactory filterFactory = new FilterFactoryImpl() ;
+    Filter filter = filterFactory.like(filterFactory.property(Metacard.ID), String.valueOf(message.getMmsi()));
+    Query query = new QueryImpl(filter);
+
+    Collection<String> ids = new ArrayList<String>();
+    ids.add(String.valueOf(message.getMmsi()));
+    QueryRequest request = new QueryRequestImpl(query);
+    try {
+      QueryResponse response = this.catalog.query(request);
+      if(!response.getResults().isEmpty()){
+        
+        return (MetacardImpl) response.getResults().get(0).getMetacard();
+      }
+    } catch (UnsupportedQueryException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (SourceUnavailableException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (FederationException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } finally {
+      return null;
+    }
+  }
+
   private String getResourceForMessage(Message message) {
     AISDDMSMetadata metadata = new AISDDMSMetadata(String.valueOf(message.getMmsi()), null, null);
-    metadata.addPoint(message.getLat(), message.getLon());
+    if(message.hasLocationData())
+      metadata.addPoint(message.getLat(), message.getLon());
     return metadata.toString();
   }
 
   public static String convertStreamToString(java.io.InputStream is) {
     java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
     return s.hasNext() ? s.next() : "";
+  }
+
+  public void setCatalog(CatalogFramework catalog) {
+    this.catalog = catalog;
   }
 }
 

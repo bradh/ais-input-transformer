@@ -24,8 +24,12 @@
          </cm:default-properties>
      </cm:property-placeholder>
 
+    <reference id="ddf-fanout" interface="ddf.catalog.CatalogFramework"/>
+
     <bean id="transformer"
-          class="org.codice.ddf.transform.ais.AISInputTransformer" />
+          class="org.codice.ddf.transform.ais.AISInputTransformer" >
+        <property name="catalog" ref="ddf-fanout"/>
+    </bean>
 
     <service ref="transformer" interface="ddf.catalog.transform.InputTransformer">
         <service-properties>

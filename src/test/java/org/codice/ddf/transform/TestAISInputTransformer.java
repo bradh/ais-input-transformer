@@ -51,18 +51,17 @@ public class TestAISInputTransformer {
 	@Test()
 	public void testPointGeo() throws IOException, CatalogTransformerException, ParseException {
 
-		Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
+		Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString3()
 				.getBytes()));
 
-		verifyBasics(metacard);
 
 		WKTReader reader = new WKTReader();
 
 		Geometry geometry = reader.read(metacard.getLocation());
 
-		assertThat(geometry.getCoordinate().x, is(0.0));
+		assertEquals(geometry.getCoordinate().x + " doesn't equal " + "0.0", String.valueOf(geometry.getCoordinate().x), "-19.046145");
 
-		assertThat(geometry.getCoordinate().y, is(0.0));
+		assertEquals(geometry.getCoordinate().y + " doesn't equal " + "0.0", String.valueOf(geometry.getCoordinate().y), "-18.227776666666667");
 
 	}
 
@@ -71,8 +70,6 @@ public class TestAISInputTransformer {
 
     Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
             .getBytes()), SAMPLE_ID);
-
-    verifyBasics(metacard);
 
     assertEquals(SAMPLE_ID + " doesn't equal " + metacard.getId(), SAMPLE_ID, metacard.getId());
 
@@ -88,11 +85,7 @@ public class TestAISInputTransformer {
 
     WKTReader reader = new WKTReader();
 
-    Geometry geometry = reader.read(metacard.getLocation());
-
-    assertThat(geometry.getCoordinate().x, is(0.0));
-
-    assertThat(geometry.getCoordinate().y, is(0.0));
+    assertEquals(metacard.getLocation(), null);
 
   }
 
@@ -114,6 +107,9 @@ public class TestAISInputTransformer {
             "!AIVDM,2,2,9,A,888888888880,2*15,rEXACTEARTH_ALL,1361835781,1361836800";
   }
 
+  public static final String sampleNMEAString3(){
+    return "!AIVDM,1,1,,A,15CEiP001`N`l4kmTNa38BIh0Gws,0*5C,rEXACTEARTH_ALL,1361835775,1361836800";
+  }
 
   public static final String sampleMetadata(){
     return "<ddms:Resource xmlns:ddms=\"http://metadata.dod.mil/mdr/ns/DDMS/2.0/\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ICISM=\"urn:us:gov:ic:ism:v2\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://metadata.dod.mil/mdr/ns/DDMS/2.0/ DDMS-v2_0.xsd\" xmlns:gml=\"http://www.opengis.net/gml\">\n" +
