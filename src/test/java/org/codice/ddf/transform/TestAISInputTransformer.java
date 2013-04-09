@@ -21,7 +21,10 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import ddf.catalog.operation.*;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -31,6 +34,16 @@ public class TestAISInputTransformer {
 	public static final String DEFAULT_TITLE = "LW 268";
 	public static final String DEFAULT_VERSION = null;
 	public static final String DEFAULT_TYPE = "application/ais-nmea";
+
+  public static AISInputTransformer createTransformer() throws ddf.catalog.source.UnsupportedQueryException, ddf.catalog.source.SourceUnavailableException, ddf.catalog.federation.FederationException {
+    AISInputTransformer transformer = new AISInputTransformer();
+    ddf.catalog.CatalogFramework catalog = mock(ddf.catalog.CatalogFramework.class);
+    when(catalog.query(any(QueryRequest.class))).thenReturn(new QueryResponseImpl(null, "sourceId"));
+    transformer.setCatalog(catalog);
+
+    return transformer;
+  }
+
 
 	@Test(expected = CatalogTransformerException.class)
 	public void testNullInput() throws IOException, CatalogTransformerException {
@@ -49,9 +62,10 @@ public class TestAISInputTransformer {
   }
 
 	@Test()
-	public void testPointGeo() throws IOException, CatalogTransformerException, ParseException {
+	public void testPointGeo() throws IOException, CatalogTransformerException, Exception {
+    AISInputTransformer transformer = createTransformer();
 
-		Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString3()
+		Metacard metacard = transformer.transform(new ByteArrayInputStream(sampleNMEAString3()
 				.getBytes()));
 
 
@@ -59,16 +73,16 @@ public class TestAISInputTransformer {
 
 		Geometry geometry = reader.read(metacard.getLocation());
 
-		assertEquals(geometry.getCoordinate().x + " doesn't equal " + "0.0", String.valueOf(geometry.getCoordinate().x), "-19.046145");
+		assertEquals(geometry.getCoordinate().x + " doesn't equal " + "-18.227776666666667", String.valueOf(geometry.getCoordinate().x), "-18.227776666666667");
 
-		assertEquals(geometry.getCoordinate().y + " doesn't equal " + "0.0", String.valueOf(geometry.getCoordinate().y), "-18.227776666666667");
+		assertEquals(geometry.getCoordinate().y + " doesn't equal " + "-19.046145", String.valueOf(geometry.getCoordinate().y), "-19.046145");
 
 	}
 
   @Test
-  public void testSetId() throws IOException, CatalogTransformerException {
+  public void testSetId() throws IOException, CatalogTransformerException, Exception {
 
-    Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
+    Metacard metacard = createTransformer().transform(new ByteArrayInputStream(sampleNMEAString()
             .getBytes()), SAMPLE_ID);
 
     assertEquals(SAMPLE_ID + " doesn't equal " + metacard.getId(), SAMPLE_ID, metacard.getId());
@@ -76,12 +90,12 @@ public class TestAISInputTransformer {
   }
 
   @Test
-  public void testFailingInput() throws IOException, CatalogTransformerException, ParseException {
+  public void testFailingInput() throws IOException, CatalogTransformerException, ParseException, Exception {
 
-    Metacard metacard = new AISInputTransformer().transform(new ByteArrayInputStream(sampleNMEAString2()
+    Metacard metacard = createTransformer().transform(new ByteArrayInputStream(sampleNMEAString2()
             .getBytes()));
 
-    assertEquals("8PNN", metacard.getTitle());
+    assertEquals("FEDERAL ST LAURENT(8PNN)", metacard.getTitle());
 
     WKTReader reader = new WKTReader();
 

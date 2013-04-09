@@ -21,6 +21,7 @@ import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.operation.*;
+import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.transform.CatalogTransformerException;
@@ -57,14 +58,7 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     return transform(inputStream, null);
   }
 
-  /**
-   *
-   * @param inputStream
-   * @param id
-   * @return
-   * @throws IOException
-   * @throws CatalogTransformerException
-   */
+
   @Override
   public Metacard transform(InputStream inputStream, String id) throws IOException, CatalogTransformerException {
     log.info("Received AIS message beginning transformation");
@@ -85,54 +79,74 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     if(messages.isEmpty())
       throw new CatalogTransformerException("No Messages found in stream.");
     log.info("Decoded " + messages.size() + " message(s)");
-    MetacardImpl metacard = null;
 
-    for(Message message : messages){
-      metacard = getMetacard(message);
-      if(metacard == null){
-        metacard = new MetacardImpl();
-        metacard.setId(String.valueOf(message.getMmsi()));
-        if(message instanceof Message5){
-          metacard.setTitle(((Message5) message).getCallSign());
-        }else{
-          metacard.setTitle(String.valueOf(message.getMmsi()));
-        }
-        metacard.setContentTypeName("application/ais-nmea");
-        metacard.setModifiedDate(new Date());
-        if(message.hasLocationData())
-          metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLon(), message.getLat())));
+    Message message = messages.get(0);
 
-        metacard.setMetadata(getResourceForMessage(message));
+    MetacardImpl metacard = getMetacard(message);
+    if(metacard == null){
+      metacard = new MetacardImpl();
+      metacard.setId(String.valueOf(message.getMmsi()));
+      metacard.setAttribute("MMSI", String.valueOf(message.getMmsi()));
+
+      if(message instanceof Message5){
+        metacard.setTitle(((Message5) message).getVesselName()  + "(" + ((Message5) message).getCallSign() + ")"  );
+      }else{
+        metacard.setTitle( String.valueOf(message.getMmsi()) );
       }
+
+      metacard.setContentTypeName("application/ais-nmea");
+      metacard.setModifiedDate(new Date());
+      if(message.hasLocationData())
+        metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLat(), message.getLon())));
+
+      metacard.setMetadata(getResourceForMessage(message));
+      log.info("Metacard " + metacard.getTitle() + "(" + metacard.getId() + ")" + " created");
+      return metacard;
+    }else{
+      //update metacard
+      if(message instanceof Message5){
+        metacard.setTitle(((Message5) message).getVesselName()  + "(" + ((Message5) message).getCallSign() + ")"  );
+      }
+
+      if(message.hasLocationData())
+        metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLat(), message.getLon())));
+
+      try {
+        updateMetacard(metacard);
+      } catch (Exception e) {
+        throw new CatalogTransformerException("Unable to update metacard " + metacard.getId(), e);
+      }
+
+      log.info("Metacard " + metacard.getTitle() + "(" + metacard.getId() + ")" + " updated");
+      return null;
     }
-    log.info("Metacard " + metacard.getTitle() + " created");
-    return metacard;
+  }
+
+  private void updateMetacard(Metacard metacard) throws SourceUnavailableException, IngestException {
+    UpdateRequest request = new UpdateRequestImpl(metacard.getId(), metacard);
+
+    this.catalog.update(request);
   }
 
   private MetacardImpl getMetacard(Message message){
-
     FilterFactory filterFactory = new FilterFactoryImpl() ;
-    Filter filter = filterFactory.like(filterFactory.property(Metacard.ID), String.valueOf(message.getMmsi()));
+    Filter filter = filterFactory.like(filterFactory.property(Metacard.ANY_TEXT), String.valueOf(message.getMmsi()));
     Query query = new QueryImpl(filter);
 
-    Collection<String> ids = new ArrayList<String>();
-    ids.add(String.valueOf(message.getMmsi()));
     QueryRequest request = new QueryRequestImpl(query);
     try {
       QueryResponse response = this.catalog.query(request);
       if(!response.getResults().isEmpty()){
-        
         return (MetacardImpl) response.getResults().get(0).getMetacard();
       }
     } catch (UnsupportedQueryException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      log.error(e);
     } catch (SourceUnavailableException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      log.error(e);
     } catch (FederationException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    } finally {
-      return null;
+      log.error(e);
     }
+    return null;
   }
 
   private String getResourceForMessage(Message message) {
@@ -142,34 +156,7 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     return metadata.toString();
   }
 
-  public static String convertStreamToString(java.io.InputStream is) {
-    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-    return s.hasNext() ? s.next() : "";
-  }
-
   public void setCatalog(CatalogFramework catalog) {
     this.catalog = catalog;
   }
 }
-
-
-
-/**
- mmsi: tokens[0] as Integer,
- //navStatus: tokens[1] as Integer,
- rateOfTurn: tokens[2] as Float,
- speedOverGround: tokens[3] as Float,
- posAccuracy: tokens[21] as Double,
- courseOverGround: tokens[6] as Double,
- trueHeading: tokens[7] as Double,
- IMO: tokens[9] as Integer,
- callsign: tokens[20],
- vesselName: tokens[10],
- //vesselType: tokens[11] as Integer,            //XXX Need to replace this with type logic
- length: tokens[12] as Double,
- width: tokens[13] as Double,
- eta: ( new Date() + 30 ),
- int navCode = tokens[1] as Integer
- def longitude = tokens[5] as Double
- def latitude = tokens[4] as Double
-*/
