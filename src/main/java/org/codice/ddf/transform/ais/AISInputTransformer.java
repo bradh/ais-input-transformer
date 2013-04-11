@@ -13,33 +13,24 @@
 package org.codice.ddf.transform.ais;
 
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTWriter;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardImpl;
-import ddf.catalog.federation.FederationException;
-import ddf.catalog.operation.*;
-import ddf.catalog.source.IngestException;
-import ddf.catalog.source.SourceUnavailableException;
-import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.transform.CatalogTransformerException;
-
 import org.apache.log4j.Logger;
 import org.codice.common.ais.Decoder;
 import org.codice.common.ais.message.Message;
 import org.codice.common.ais.message.Message5;
 import org.codice.common.ais.message.UnknownMessageException;
-import org.geotools.filter.FilterFactoryImpl;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 
 public class AISInputTransformer implements ddf.catalog.transform.InputTransformer {
@@ -81,72 +72,25 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     log.info("Decoded " + messages.size() + " message(s)");
 
     Message message = messages.get(0);
+    MetacardImpl metacard = new MetacardImpl();
+    metacard.setId(String.valueOf(message.getMmsi()));
+    metacard.setAttribute("MMSI", String.valueOf(message.getMmsi()));
 
-    MetacardImpl metacard = getMetacard(message);
-    if(metacard == null){
-      metacard = new MetacardImpl();
-      metacard.setId(String.valueOf(message.getMmsi()));
-      metacard.setAttribute("MMSI", String.valueOf(message.getMmsi()));
-
-      if(message instanceof Message5){
-        metacard.setTitle(((Message5) message).getVesselName()  + "(" + ((Message5) message).getCallSign() + ")"  );
-      }else{
-        metacard.setTitle( String.valueOf(message.getMmsi()) );
-      }
-
-      metacard.setContentTypeName("application/ais-nmea");
-      metacard.setModifiedDate(new Date());
-      if(message.hasLocationData())
-        metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLat(), message.getLon())));
-
-      metacard.setMetadata(getResourceForMessage(message));
-      log.info("Metacard " + metacard.getTitle() + "(" + metacard.getId() + ")" + " created");
-      return metacard;
+    if(message instanceof Message5){
+      metacard.setTitle(((Message5) message).getVesselName()  + "(" + ((Message5) message).getCallSign() + ")"  );
     }else{
-      //update metacard
-      if(message instanceof Message5){
-        metacard.setTitle(((Message5) message).getVesselName()  + "(" + ((Message5) message).getCallSign() + ")"  );
-      }
-
-      if(message.hasLocationData())
-        metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLat(), message.getLon())));
-
-      try {
-        updateMetacard(metacard);
-      } catch (Exception e) {
-        throw new CatalogTransformerException("Unable to update metacard " + metacard.getId(), e);
-      }
-
-      log.info("Metacard " + metacard.getTitle() + "(" + metacard.getId() + ")" + " updated");
-      return null;
+      metacard.setTitle( String.valueOf(message.getMmsi()) );
     }
-  }
 
-  private void updateMetacard(Metacard metacard) throws SourceUnavailableException, IngestException {
-    UpdateRequest request = new UpdateRequestImpl(metacard.getId(), metacard);
+    metacard.setContentTypeName("application/ais-nmea");
+    metacard.setModifiedDate(new Date());
+    if(message.hasLocationData())
+      metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLat(), message.getLon())));
 
-    this.catalog.update(request);
-  }
+    metacard.setMetadata(getResourceForMessage(message));
+    log.info("Metacard " + metacard.getTitle() + "(" + metacard.getId() + ")" + " created");
+    return metacard;
 
-  private MetacardImpl getMetacard(Message message){
-    FilterFactory filterFactory = new FilterFactoryImpl() ;
-    Filter filter = filterFactory.like(filterFactory.property(Metacard.ANY_TEXT), String.valueOf(message.getMmsi()));
-    Query query = new QueryImpl(filter);
-
-    QueryRequest request = new QueryRequestImpl(query);
-    try {
-      QueryResponse response = this.catalog.query(request);
-      if(!response.getResults().isEmpty()){
-        return (MetacardImpl) response.getResults().get(0).getMetacard();
-      }
-    } catch (UnsupportedQueryException e) {
-      log.error(e);
-    } catch (SourceUnavailableException e) {
-      log.error(e);
-    } catch (FederationException e) {
-      log.error(e);
-    }
-    return null;
   }
 
   private String getResourceForMessage(Message message) {
