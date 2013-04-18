@@ -22,13 +22,23 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-    <parent>
-        <artifactId>catalog</artifactId>
-        <groupId>ddf.catalog</groupId>
-        <version>2.1.0.20130129-1341</version>
-    </parent>
+    <scm>
+        <developerConnection>scm:git:git@bitbucket.org:codice/ais-input-transformer.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <ddf.version>2.2.0.ALPHA3</ddf.version>
+    </properties>
+
 
     <distributionManagement>
+        <repository>
+            <id>codiceReleases</id>
+            <name>Codice Release Repository</name>
+            <url>https://tools.codice.org/artifacts/content/repositories/releases/</url>
+        </repository>
+
         <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
             <id>codiceSnapshots</id>
@@ -39,6 +49,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>ddf</groupId>
+            <artifactId>ddf</artifactId>
+            <type>pom</type>
+            <version>${ddf.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
             <version>8.4</version>
@@ -46,14 +63,14 @@
 
         <dependency>
             <groupId>ddf.catalog.core</groupId>
-            <artifactId>ddf-catalog-api</artifactId>
-            <version>2.0.10</version>
+            <artifactId>catalog-core-api</artifactId>
+            <version>${ddf.version}</version>
         </dependency>
 
         <dependency>
             <groupId>ddf.catalog.common</groupId>
             <artifactId>geo-formatter</artifactId>
-            <version>${ddf.geo.formatter.version}</version>
+            <version>${ddf.version}</version>
         </dependency>
 
         <dependency>
@@ -92,7 +109,7 @@
         <dependency>
             <groupId>org.codice.common</groupId>
             <artifactId>ais-parser</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
@@ -112,6 +129,7 @@
 		<plugin>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>maven-bundle-plugin</artifactId>
+            <extensions>true</extensions>
 			<configuration>
 				<instructions>
 					<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
@@ -137,6 +155,13 @@
 				</instructions>
 			</configuration>
 		</plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.4.1</version>
+        </plugin>
+
 	</plugins>
   </build>
 	
