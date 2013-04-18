@@ -32,7 +32,7 @@ public class AISInputStreamAdapter {
   private static final String CONTENT_TYPE = "application/ais-nmea";
   private InputStream inputStream;
   private String url;
-  private long delay;
+
   private HttpClient httpClient;
   private boolean open = false;
   private boolean async = false;
@@ -42,19 +42,18 @@ public class AISInputStreamAdapter {
     this.inputStream = inputStream;
   }
 
-  public AISInputStreamAdapter(InputStream inputStream, String url, long delay) throws UnhandledMessageException, IOException, URISyntaxException {
+  public AISInputStreamAdapter(InputStream inputStream, String url) throws UnhandledMessageException, IOException, URISyntaxException {
     log.info("Creating AISInputStreamAdapter");
 
     this.inputStream = inputStream;
     this.url = url;
-    this.delay = delay;
   }
 
   public void init() throws IOException, UnhandledMessageException, URISyntaxException {
     log.info("Starting AISInputStreamAdapter");
     this.open = true;
     this.async = true;
-    post(new URL(url), delay);
+    post(new URL(url));
   }
 
   public void destroy() throws IOException {
@@ -65,11 +64,7 @@ public class AISInputStreamAdapter {
 
   }
 
-  public void post(URL url) throws URISyntaxException, IOException, UnhandledMessageException {
-    post(url, 0);
-  }
-
-  public void post(final URL url, final long delay) throws URISyntaxException, IOException, UnhandledMessageException {
+  public void post(final URL url) throws URISyntaxException, IOException, UnhandledMessageException {
     Thread thread = new Thread(){
       @Override
       public void run(){
@@ -96,10 +91,6 @@ public class AISInputStreamAdapter {
               int response = http.executeMethod(post);
               log.info("Received response " + response + " from POST");
             }
-
-            try {
-              Thread.sleep(delay);
-            } catch (InterruptedException e) {return;}
           }catch (Exception e){
             if(open)
               log.error(e);

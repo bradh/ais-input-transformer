@@ -55,7 +55,6 @@
             destroy-method="destroy">
         <argument ref="datagramInputStream" />
         <argument value="${org.codice.ddf.transform.ais.url}" />
-        <argument value="1000" />
     </bean>
 
 
