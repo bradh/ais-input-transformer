@@ -73,9 +73,9 @@ public class TestAISInputTransformer {
 
 		Geometry geometry = reader.read(metacard.getLocation());
 
-		assertEquals(geometry.getCoordinate().x + " doesn't equal " + "-18.227776666666667", String.valueOf(geometry.getCoordinate().x), "-18.227776666666667");
+		assertEquals(geometry.getCoordinate().x + " doesn't equal " + "-19.046145", String.valueOf(geometry.getCoordinate().x), "-19.046145");
 
-		assertEquals(geometry.getCoordinate().y + " doesn't equal " + "-19.046145", String.valueOf(geometry.getCoordinate().y), "-19.046145");
+		assertEquals(geometry.getCoordinate().y + " doesn't equal " + "-18.227776666666667", String.valueOf(geometry.getCoordinate().y), "-18.227776666666667");
 
 	}
 

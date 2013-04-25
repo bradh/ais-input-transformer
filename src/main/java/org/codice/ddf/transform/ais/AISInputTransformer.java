@@ -85,7 +85,7 @@ public class AISInputTransformer implements ddf.catalog.transform.InputTransform
     metacard.setContentTypeName("application/ais-nmea");
     metacard.setModifiedDate(new Date());
     if(message.hasLocationData())
-      metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLat(), message.getLon())));
+      metacard.setLocation(WKTWriter.toPoint(new Coordinate(message.getLon(), message.getLat())));
 
     metacard.setMetadata(getResourceForMessage(message));
     log.info("Metacard " + metacard.getTitle() + "(" + metacard.getId() + ")" + " created");
