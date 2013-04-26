@@ -19,12 +19,12 @@
   <groupId>org.codice.opendx</groupId>
   <artifactId>ais-input-transformer</artifactId>
   <name>OPENDX :: TRANSFORMER :: INPUT :: AIS</name>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <packaging>bundle</packaging>
 
     <scm>
         <developerConnection>scm:git:git@bitbucket.org:codice/ais-input-transformer.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>ais-input-transformer-1.0.1</tag>
     </scm>
 
     <properties>
