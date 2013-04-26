@@ -30,7 +30,7 @@ limitations under the License.
   ***                ***
   *****************************************************************
 */
-package org.codice.ddf.utility.ais;
+package org.codice.opendx.utility.ais;
 
 import org.apache.log4j.Logger;
 

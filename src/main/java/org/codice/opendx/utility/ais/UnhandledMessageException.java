@@ -1,4 +1,4 @@
-package org.codice.ddf.utility.ais;
+package org.codice.opendx.utility.ais;
 
 /**
  * User: kwplummer

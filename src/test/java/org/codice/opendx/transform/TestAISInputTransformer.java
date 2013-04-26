@@ -9,14 +9,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-package org.codice.ddf.transform;
+package org.codice.opendx.transform;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.transform.CatalogTransformerException;
-import org.codice.ddf.transform.ais.AISInputTransformer;
+import org.codice.opendx.transform.ais.AISInputTransformer;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

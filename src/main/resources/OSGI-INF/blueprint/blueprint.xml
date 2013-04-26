@@ -18,7 +18,7 @@
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0" >
 
-     <cm:property-placeholder persistent-id="org.codice.ddf.transform.ais" update-strategy="reload">
+     <cm:property-placeholder persistent-id="org.codice.opendx.transform.ais" update-strategy="reload">
          <cm:default-properties>
              <cm:property name="org.codice.ddf.transform.ais.url" value="http://localhost:8080/services/catalog"/>
          </cm:default-properties>
@@ -27,7 +27,7 @@
     <reference id="ddf-fanout" interface="ddf.catalog.CatalogFramework"/>
 
     <bean id="transformer"
-          class="org.codice.ddf.transform.ais.AISInputTransformer" >
+          class="org.codice.opendx.transform.ais.AISInputTransformer" >
         <property name="catalog" ref="ddf-fanout"/>
     </bean>
 
@@ -47,14 +47,14 @@
         <!--<argument type="java.lang.String" value="/Users/kwplummer/Downloads/20130226.log" />-->
     <!--</bean>-->
 
-    <bean id="datagramInputStream" class="org.codice.ddf.utility.ais.DatagramInputStream" >
+    <bean id="datagramInputStream" class="org.codice.opendx.utility.ais.DatagramInputStream" >
         <argument value="62626" type="int"/>
     </bean>
 
-    <bean id="inputStreamAdapter" class="org.codice.ddf.utility.ais.AISInputStreamAdapter" init-method="init"
+    <bean id="inputStreamAdapter" class="org.codice.opendx.utility.ais.AISInputStreamAdapter" init-method="init"
             destroy-method="destroy">
         <argument ref="datagramInputStream" />
-        <argument value="${org.codice.ddf.transform.ais.url}" />
+        <argument value="${org.codice.opendx.transform.ais.url}" />
     </bean>
 
 

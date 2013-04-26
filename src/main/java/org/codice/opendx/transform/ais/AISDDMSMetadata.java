@@ -1,4 +1,4 @@
-package org.codice.ddf.transform.ais;
+package org.codice.opendx.transform.ais;
 
 import java.util.ArrayList;
 import java.util.List;

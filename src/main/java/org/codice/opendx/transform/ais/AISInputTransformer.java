@@ -10,7 +10,7 @@
  *
  **/
 
-package org.codice.ddf.transform.ais;
+package org.codice.opendx.transform.ais;
 
 
 import com.vividsolutions.jts.geom.Coordinate;

@@ -1,9 +1,8 @@
-package org.codice.ddf.utility.ais;
+package org.codice.opendx.utility.ais;
 
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.codice.ddf.transform.TestAISInputTransformer;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

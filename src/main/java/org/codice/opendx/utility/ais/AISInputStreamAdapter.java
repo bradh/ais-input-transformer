@@ -3,10 +3,9 @@
  * post only when the message is complete.
  */
 
-package org.codice.ddf.utility.ais;
+package org.codice.opendx.utility.ais;
 
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
@@ -15,10 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.felix.ipojo.annotations.Component;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
