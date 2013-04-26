@@ -19,7 +19,7 @@
   <groupId>org.codice.opendx</groupId>
   <artifactId>ais-input-transformer</artifactId>
   <name>OPENDX :: TRANSFORMER :: INPUT :: AIS</name>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
     <scm>
