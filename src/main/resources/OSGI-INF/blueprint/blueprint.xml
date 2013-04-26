@@ -20,7 +20,7 @@
 
      <cm:property-placeholder persistent-id="org.codice.opendx.transform.ais" update-strategy="reload">
          <cm:default-properties>
-             <cm:property name="org.codice.ddf.transform.ais.url" value="http://localhost:8080/services/catalog"/>
+             <cm:property name="org.codice.opendx.transform.ais.url" value="http://localhost:8080/services/catalog"/>
          </cm:default-properties>
      </cm:property-placeholder>
 
