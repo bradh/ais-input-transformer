@@ -28,10 +28,25 @@
     </scm>
 
     <properties>
-        <ddf.version>2.2.0.ALPHA3</ddf.version>
+        <ddf.version>2.2.0.RC2-SNAPSHOT</ddf.version>
     </properties>
 
 
+   <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
+        <repository>
+            <id>nexus.bericotechnologies.com</id>
+            <name>Berico Technologies Nexus</name>
+            <url>http://nexus.bericotechnologies.com/content/groups/public</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+    
     <distributionManagement>
         <repository>
             <id>codiceReleases</id>
@@ -109,7 +124,7 @@
         <dependency>
             <groupId>org.codice.common</groupId>
             <artifactId>ais-parser</artifactId>
-            <version>1.1</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -128,12 +143,13 @@
 		<!-- Add in additional imports that this bundle requires using a comma-sperated list. -->
 		<plugin>
 			<groupId>org.apache.felix</groupId>
+			<version>2.3.6</version>
 			<artifactId>maven-bundle-plugin</artifactId>
-            <extensions>true</extensions>
+			<extensions>true</extensions>
 			<configuration>
 				<instructions>
 					<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-          <Embed-Dependency>ais-parser;inline=true</Embed-Dependency>
+					<Embed-Dependency>ais-parser;inline=true</Embed-Dependency>
 					<Import-Package>
 					    ddf.catalog.*,
 						  org.osgi.framework,
