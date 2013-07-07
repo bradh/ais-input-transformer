@@ -28,7 +28,7 @@
     </scm>
 
     <properties>
-        <ddf.version>2.2.0.RC2-SNAPSHOT</ddf.version>
+        <ddf.version>2.2.0.RC4-SNAPSHOT</ddf.version>
     </properties>
 
 
